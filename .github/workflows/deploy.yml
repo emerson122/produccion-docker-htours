@@ -18,9 +18,6 @@ jobs:
       with:
         node-version: '14'
 
-    - name: Install Dependencies
-      run: npm ci
-
     - name: Build Laravel Project
       run: |
         docker build -t nombre-de-tu-imagen .
@@ -32,4 +29,3 @@ jobs:
         # Por ejemplo: mv public/* docs/
       env:
         JEKYLL_ENV: production
-
