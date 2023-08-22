@@ -1,0 +1,35 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Build Laravel Project
+      run: |
+        docker build -t nombre-de-tu-imagen .
+        docker run -d -p 9000:9000 nombre-de-tu-imagen
+
+    - name: Deploy to GitHub Pages
+      run: |
+        # Aquí puedes añadir comandos para mover los archivos a la carpeta que GitHub Pages utilizará para el despliegue
+        # Por ejemplo: mv public/* docs/
+      env:
+        JEKYLL_ENV: production
+

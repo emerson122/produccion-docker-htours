@@ -1,24 +1,26 @@
-# CARGAMOS IMAGEN DE PHP MODO ALPINE SUPER REDUCIDA
-FROM elrincondeisma/octane:latest
+# Utiliza una imagen base oficial de PHP
+FROM php:9-fpm
 
-RUN curl -sS https://getcomposer.org/installer​ | php -- \
-     --install-dir=/usr/local/bin --filename=composer
+# Instala las dependencias necesarias (ajusta según tus necesidades)
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    zip \
+    unzip
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-COPY --from=spiralscout/roadrunner:2.4.2 /usr/bin/rr /usr/bin/rr
+# Instala Composer globalmente
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-WORKDIR /app
+# Configura el directorio de trabajo en el contenedor
+WORKDIR /var/www
+
+# Copia los archivos del proyecto al contenedor
 COPY . .
-RUN rm -rf /app/vendor
-RUN rm -rf /app/composer.lock
-RUN composer install
-RUN composer require laravel/octane spiral/roadrunner
-COPY .env.example .env
-RUN mkdir -p /app/storage/logs
-RUN php artisan cache:clear
-RUN php artisan view:clear
-RUN php artisan config:clear
-RUN php artisan octane:install --server="swoole"
-CMD php artisan octane:start --server="swoole" --host="0.0.0.0"
 
+# Instala las dependencias de Composer
+RUN composer install
+
+# Expone el puerto 9000 (ajusta según tu configuración)
 EXPOSE 8000
+
+# Comando para iniciar el servidor PHP-FPM
+CMD ["php-fpm"]
